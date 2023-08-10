@@ -1,0 +1,67 @@
+import { redirect } from "next/navigation";
+import { currentUser } from "@clerk/nextjs";
+
+import Comment from "@/components/forms/Comment";
+import ThoughtCard from "@/components/cards/ThoughtCard";
+
+import { fetchUser } from "@/lib/actions/user.actions";
+import { fetchThoughtById } from "@/lib/actions/thought.action";
+
+
+export const revalidate = 0;
+
+async function page({ params }: { params: { id: string } }) {
+  if (!params.id) return null;
+
+  const user = await currentUser();
+  if (!user) return null;
+
+  const userInfo = await fetchUser(user.id);
+  if (!userInfo?.onboarded) redirect("/onboarding");
+
+  const thought = await fetchThoughtById(params.id);
+
+  return (
+    <section className='relative'>
+      <div>
+        <ThoughtCard
+          id={thought._id}
+          currentUserId={user.id}
+          parentId={thought.parentId}
+          content={thought.text}
+          author={thought.author}
+          group={thought.group}
+          createdAt={thought.createdAt}
+          comments={thought.children}
+        />
+      </div>
+
+      <div className='mt-7'>
+        <Comment
+          thoughtId={thought.id}
+          currentUserImg={userInfo.image}
+          currentUserId={JSON.stringify(userInfo._id)}
+        />
+      </div>
+
+      <div className='mt-10'>
+        {thought.children?.map((childItem: any) => (
+          <ThoughtCard
+            key={childItem._id}
+            id={childItem._id}
+            currentUserId={childItem?.id}
+            parentId={childItem.parentId}
+            content={childItem.text}
+            author={childItem.author}
+            group={childItem.group}
+            createdAt={childItem.createdAt}
+            comments={childItem.children}
+            isComment
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export default page;
