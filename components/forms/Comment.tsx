@@ -16,10 +16,9 @@ import {
 
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { CommentValidation } from "@/lib/validation/thought";
-import { addCommentToThought } from "@/lib/actions/thought.action";
 
-
+import { CommentValidation } from "@/lib/validations/thought";
+import { addCommentToThought } from "@/lib/actions/thought.actions";
 
 interface Props {
   thoughtId: string;

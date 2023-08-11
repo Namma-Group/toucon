@@ -1,19 +1,25 @@
-import mongoose from 'mongoose';
-let isConnected = false;
+import mongoose from "mongoose";
+
+let isConnected = false; // Variable to track the connection status
 
 export const connectToDB = async () => {
-    mongoose.set('strictQuery', true);
+  // Set strict query mode for Mongoose to prevent unknown field queries.
+  mongoose.set("strictQuery", true);
 
-    if (!process.env.MONGODB_URL) return console.log('MONGODB_URL not found');
-    if (isConnected) return console.log('Already connected to MongoDB');
+  if (!process.env.MONGODB_URL) return console.log("Missing MongoDB URL");
 
-    try {
-        await mongoose.connect(process.env.MONGODB_URL);
-        isConnected = true;
-        console.log('Connected to MongoDB');
-    } catch (error) {
-        console.log(error);
-    }
-}
+  // If the connection is already established, return without creating a new connection.
+  if (isConnected) {
+    console.log("MongoDB connection already established");
+    return;
+  }
 
-// IQCOWRJAkNt3Cj3O
+  try {
+    await mongoose.connect(process.env.MONGODB_URL);
+
+    isConnected = true; // Set the connection status to true
+    console.log("MongoDB connected");
+  } catch (error) {
+    console.log(error);
+  }
+};
