@@ -1,29 +1,39 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-    id: { type: String, required: true },
-    username: { type: String, required: true, unique: true },
-    name: { type: String, required: true },
-    image: String,
-    bio: String,
-    thoughts: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Thought'
-        }
-    ],
-    onboarded: {
-        type: Boolean,
-        default: false,
+  id: {
+    type: String,
+    required: true,
+  },
+  username: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  image: String,
+  bio: String,
+  thoughts: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Thought",
     },
-    spaces: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Spaces'
-        }
-    ]
+  ],
+  onboarded: {
+    type: Boolean,
+    default: false,
+  },
+  groups: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Group",
+    },
+  ],
 });
 
-const User = mongoose.models.User || mongoose.model('User', userSchema);
+const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 export default User;

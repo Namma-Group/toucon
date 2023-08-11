@@ -5,8 +5,7 @@ import Comment from "@/components/forms/Comment";
 import ThoughtCard from "@/components/cards/ThoughtCard";
 
 import { fetchUser } from "@/lib/actions/user.actions";
-import { fetchThoughtById } from "@/lib/actions/thought.action";
-
+import { fetchThoughtById } from "@/lib/actions/thought.actions";
 
 export const revalidate = 0;
 
@@ -38,18 +37,18 @@ async function page({ params }: { params: { id: string } }) {
 
       <div className='mt-7'>
         <Comment
-          thoughtId={thought.id}
-          currentUserImg={userInfo.image}
+          thoughtId={params.id}
+          currentUserImg={user.imageUrl}
           currentUserId={JSON.stringify(userInfo._id)}
         />
       </div>
 
       <div className='mt-10'>
-        {thought.children?.map((childItem: any) => (
+        {thought.children.map((childItem: any) => (
           <ThoughtCard
             key={childItem._id}
             id={childItem._id}
-            currentUserId={childItem?.id}
+            currentUserId={user.id}
             parentId={childItem.parentId}
             content={childItem.text}
             author={childItem.author}

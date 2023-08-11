@@ -2,12 +2,11 @@
 
 import { FilterQuery, SortOrder } from "mongoose";
 
-
+import Group from "../models/group.model";
 import Thought from "../models/thought.model";
 import User from "../models/user.model";
 
 import { connectToDB } from "../mongoose";
-import Group from "../models/group.model";
 
 export async function createGroup(
   id: string,
@@ -45,7 +44,7 @@ export async function createGroup(
     return createdGroup;
   } catch (error) {
     // Handle any errors
-    console.error("Error creating group:", error);
+    console.error("Error creating croup:", error);
     throw error;
   }
 }
@@ -54,7 +53,7 @@ export async function fetchGroupDetails(id: string) {
   try {
     connectToDB();
 
-    const GroupDetails = await Group.findOne({ id }).populate([
+    const groupDetails = await Group.findOne({ id }).populate([
       "createdBy",
       {
         path: "members",
@@ -63,10 +62,10 @@ export async function fetchGroupDetails(id: string) {
       },
     ]);
 
-    return GroupDetails;
+    return groupDetails;
   } catch (error) {
     // Handle any errors
-    console.error("Error fetching group details:", error);
+    console.error("Error fetching croup details:", error);
     throw error;
   }
 }
@@ -75,7 +74,7 @@ export async function fetchGroupPosts(id: string) {
   try {
     connectToDB();
 
-    const GroupPosts = await Group.findById(id).populate({
+    const groupPosts = await Group.findById(id).populate({
       path: "thoughts",
       model: Thought,
       populate: [
@@ -96,7 +95,7 @@ export async function fetchGroupPosts(id: string) {
       ],
     });
 
-    return GroupPosts;
+    return groupPosts;
   } catch (error) {
     // Handle any errors
     console.error("Error fetching group posts:", error);
@@ -104,7 +103,7 @@ export async function fetchGroupPosts(id: string) {
   }
 }
 
-export async function fetchCommunities({
+export async function fetchGroups({
   searchString = "",
   pageNumber = 1,
   pageSize = 20,
@@ -118,13 +117,13 @@ export async function fetchCommunities({
   try {
     connectToDB();
 
-    // Calculate the number of communities to skip based on the page number and page size.
+    // Calculate the number of croups to skip based on the page number and page size.
     const skipAmount = (pageNumber - 1) * pageSize;
 
     // Create a case-insensitive regular expression for the provided search string.
     const regex = new RegExp(searchString, "i");
 
-    // Create an initial query object to filter communities.
+    // Create an initial query object to filter croups.
     const query: FilterQuery<typeof Group> = {};
 
     // If the search string is not empty, add the $or operator to match either username or name fields.
@@ -135,22 +134,22 @@ export async function fetchCommunities({
       ];
     }
 
-    // Define the sort options for the fetched communities based on createdAt field and provided sort order.
+    // Define the sort options for the fetched croups based on createdAt field and provided sort order.
     const sortOptions = { createdAt: sortBy };
 
-    // Create a query to fetch the communities based on the search and sort criteria.
-    const groupsQuery = Group.find(query)
+    // Create a query to fetch the croups based on the search and sort criteria.
+    const groupQuery = Group.find(query)
       .sort(sortOptions)
       .skip(skipAmount)
       .limit(pageSize)
       .populate("members");
 
-    // Count the total number of communities that match the search criteria (without pagination).
+    // Count the total number of croups that match the search criteria (without pagination).
     const totalGroupsCount = await Group.countDocuments(query);
 
-    const groups = await groupsQuery.exec();
+    const groups = await groupQuery.exec();
 
-    // Check if there are more communities beyond the current page.
+    // Check if there are more croups beyond the current page.
     const isNext = totalGroupsCount > skipAmount + groups.length;
 
     return { groups, isNext };
@@ -167,7 +166,7 @@ export async function addMemberToGroup(
   try {
     connectToDB();
 
-    // Find the Group by its unique id
+    // Find the croup by its unique id
     const group = await Group.findOne({ id: groupId });
 
     if (!group) {
@@ -181,17 +180,17 @@ export async function addMemberToGroup(
       throw new Error("User not found");
     }
 
-    // Check if the user is already a member of the Group
+    // Check if the user is already a member of the croup
     if (group.members.includes(user._id)) {
       throw new Error("User is already a member of the group");
     }
 
-    // Add the user's _id to the members array in the Group
+    // Add the user's _id to the members array in the croup
     group.members.push(user._id);
     await group.save();
 
-    // Add the Group's _id to the communities array in the user
-    user.groups.push(group._id);
+    // Add the croup's _id to the croups array in the user
+    user.croups.push(group._id);
     await user.save();
 
     return group;
@@ -223,16 +222,16 @@ export async function removeUserFromGroup(
       throw new Error("Group not found");
     }
 
-    // Remove the user's _id from the members array in the Group
+    // Remove the user's _id from the members array in the croup
     await Group.updateOne(
       { _id: groupIdObject._id },
       { $pull: { members: userIdObject._id } }
     );
 
-    // Remove the Group's _id from the communities array in the user
+    // Remove the croup's _id from the croups array in the user
     await User.updateOne(
       { _id: userIdObject._id },
-      { $pull: { communities: groupIdObject._id } }
+      { $pull: { groups: groupIdObject._id } }
     );
 
     return { success: true };
@@ -244,7 +243,7 @@ export async function removeUserFromGroup(
 }
 
 export async function updateGroupInfo(
-    groupId: string,
+  groupId: string,
   name: string,
   username: string,
   image: string
@@ -252,14 +251,14 @@ export async function updateGroupInfo(
   try {
     connectToDB();
 
-    // Find the Group by its _id and update the information
+    // Find the croup by its _id and update the information
     const updatedGroup = await Group.findOneAndUpdate(
       { id: groupId },
       { name, username, image }
     );
 
     if (!updatedGroup) {
-      throw new Error("Group not found");
+      throw new Error("Croup not found");
     }
 
     return updatedGroup;
@@ -274,7 +273,7 @@ export async function deleteGroup(groupId: string) {
   try {
     connectToDB();
 
-    // Find the Group by its ID and delete it
+    // Find the croup by its ID and delete it
     const deletedGroup = await Group.findOneAndDelete({
       id: groupId,
     });
@@ -283,13 +282,13 @@ export async function deleteGroup(groupId: string) {
       throw new Error("Group not found");
     }
 
-    // Delete all threads associated with the Group
+    // Delete all threads associated with the croup
     await Thought.deleteMany({ group: groupId });
 
-    // Find all users who are part of the Group
+    // Find all users who are part of the croup
     const groupUsers = await User.find({ groups: groupId });
 
-    // Remove the Group from the 'communities' array for each user
+    // Remove the croup from the 'croups' array for each user
     const updateUserPromises = groupUsers.map((user) => {
       user.groups.pull(groupId);
       return user.save();

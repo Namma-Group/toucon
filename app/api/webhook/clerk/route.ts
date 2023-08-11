@@ -10,8 +10,13 @@ import { headers } from "next/headers";
 import { IncomingHttpHeaders } from "http";
 
 import { NextResponse } from "next/server";
-import { addMemberToGroup, createGroup, deleteGroup, removeUserFromGroup, updateGroupInfo } from "@/lib/actions/group.action";
-
+import {
+  addMemberToCommunity,
+  createCommunity,
+  deleteCommunity,
+  removeUserFromCommunity,
+  updateCommunityInfo,
+} from "@/lib/actions/community.actions";
 
 // Resource: https://clerk.com/docs/integration/webhooks#supported-events
 // Above document lists the supported events
@@ -65,7 +70,7 @@ export const POST = async (request: Request) => {
 
     try {
       // @ts-ignore
-      await createGroup(
+      await createCommunity(
         // @ts-ignore
         id,
         name,
@@ -116,7 +121,7 @@ export const POST = async (request: Request) => {
       console.log("created", evnt?.data);
 
       // @ts-ignore
-      await addMemberToGroup(organization.id, public_user_data.user_id);
+      await addMemberToCommunity(organization.id, public_user_data.user_id);
 
       return NextResponse.json(
         { message: "Invitation accepted" },
@@ -141,7 +146,7 @@ export const POST = async (request: Request) => {
       console.log("removed", evnt?.data);
 
       // @ts-ignore
-      await removeUserFromGroup(public_user_data.user_id, organization.id);
+      await removeUserFromCommunity(public_user_data.user_id, organization.id);
 
       return NextResponse.json({ message: "Member removed" }, { status: 201 });
     } catch (err) {
@@ -163,7 +168,7 @@ export const POST = async (request: Request) => {
       console.log("updated", evnt?.data);
 
       // @ts-ignore
-      await updateGroupInfo(id, name, slug, logo_url);
+      await updateCommunityInfo(id, name, slug, logo_url);
 
       return NextResponse.json({ message: "Member removed" }, { status: 201 });
     } catch (err) {
@@ -185,7 +190,7 @@ export const POST = async (request: Request) => {
       console.log("deleted", evnt?.data);
 
       // @ts-ignore
-      await deleteGroup(id);
+      await deleteCommunity(id);
 
       return NextResponse.json(
         { message: "Organization deleted" },
@@ -200,4 +205,4 @@ export const POST = async (request: Request) => {
       );
     }
   }
-}; 
+};
