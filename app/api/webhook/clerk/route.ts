@@ -11,12 +11,12 @@ import { IncomingHttpHeaders } from "http";
 
 import { NextResponse } from "next/server";
 import {
-  addMemberToCommunity,
-  createCommunity,
-  deleteCommunity,
-  removeUserFromCommunity,
-  updateCommunityInfo,
-} from "@/lib/actions/community.actions";
+  addMemberToGroup,
+  createGroup,
+  deleteGroup,
+  removeUserFromGroup,
+  updateGroupInfo,
+} from "@/lib/actions/group.actions";
 
 // Resource: https://clerk.com/docs/integration/webhooks#supported-events
 // Above document lists the supported events
@@ -70,7 +70,7 @@ export const POST = async (request: Request) => {
 
     try {
       // @ts-ignore
-      await createCommunity(
+      await createGroup(
         // @ts-ignore
         id,
         name,
@@ -121,7 +121,7 @@ export const POST = async (request: Request) => {
       console.log("created", evnt?.data);
 
       // @ts-ignore
-      await addMemberToCommunity(organization.id, public_user_data.user_id);
+      await addMemberToGroup(organization.id, public_user_data.user_id);
 
       return NextResponse.json(
         { message: "Invitation accepted" },
@@ -146,7 +146,7 @@ export const POST = async (request: Request) => {
       console.log("removed", evnt?.data);
 
       // @ts-ignore
-      await removeUserFromCommunity(public_user_data.user_id, organization.id);
+      await removeUserFromGroup(public_user_data.user_id, organization.id);
 
       return NextResponse.json({ message: "Member removed" }, { status: 201 });
     } catch (err) {
@@ -168,7 +168,7 @@ export const POST = async (request: Request) => {
       console.log("updated", evnt?.data);
 
       // @ts-ignore
-      await updateCommunityInfo(id, name, slug, logo_url);
+      await updateGroupInfo(id, name, slug, logo_url);
 
       return NextResponse.json({ message: "Member removed" }, { status: 201 });
     } catch (err) {
@@ -190,7 +190,7 @@ export const POST = async (request: Request) => {
       console.log("deleted", evnt?.data);
 
       // @ts-ignore
-      await deleteCommunity(id);
+      await deleteGroup(id);
 
       return NextResponse.json(
         { message: "Organization deleted" },

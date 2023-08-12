@@ -27,7 +27,7 @@ async function Page({
 
   return (
     <>
-      <h1 className='head-text'>Communities</h1>
+      <h1 className='head-text'>Groups</h1>
 
       <div className='mt-5'>
         <Searchbar routeType='groups' />
@@ -38,15 +38,15 @@ async function Page({
           <p className='no-result'>No Result</p>
         ) : (
           <>
-            {result.groups.map((Group) => (
+            {result.groups.map((group) => (
               <GroupCard
-                key={Group.id}
-                id={Group.id}
-                name={Group.name}
-                username={Group.username}
-                imgUrl={Group.image}
-                bio={Group.bio}
-                members={Group.members}
+                key={group.id}
+                id={group.id}
+                name={group.name}
+                username={group.username}
+                imgUrl={group.image}
+                bio={group.bio}
+                members={group.members}
               />
             ))}
           </>
@@ -54,7 +54,7 @@ async function Page({
       </section>
 
       <Pagination
-        path='communities'
+        path='groups'
         pageNumber={searchParams?.page ? +searchParams.page : 1}
         isNext={result.isNext}
       />
